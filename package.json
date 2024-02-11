@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/phoenixbit1/Anime_RS/issues"
   },
-  "homepage": "https://github.com/phoenixbit1/Anime_RS#readme"
+  "homepage": "https://github.com/phoenixbit1/Anime_RS#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
