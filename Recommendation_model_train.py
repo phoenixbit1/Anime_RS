@@ -135,6 +135,89 @@ def model_two(anime_list_data, embedding_size, epochs, batch_size):
         logging.error(f"An error occurred: {e}")
 
 
+# Function to train the third neural network model
+def model_three(anime_list_data, embedding_size, epochs, batch_size):
+    try:
+        # Preprocessing steps remain the same
+        mlb = MultiLabelBinarizer()
+        encoded_genres = mlb.fit_transform(anime_list_data['genres'])
+        joblib.dump(mlb, 'Anime_RS/models/mlb_model_three.pkl')  # Save MultiLabelBinarizer
+        
+        # MinMaxScaler is used to scale the scores between 0 and 1
+        scaler = MinMaxScaler()
+        scores_normalized = scaler.fit_transform(anime_list_data[['score']])
+        joblib.dump(scaler, 'Anime_RS/models/scaler_model_three.pkl')  # Save MinMaxScaler
+        
+        features = np.concatenate([encoded_genres, scores_normalized], axis=1)
+
+        # Neural network building and training steps
+        input_layer = Input(shape=(features.shape[1],))
+
+        # Encoder layer is the layer that is used to encode the data and is the second layer of the neural network
+        encoder_layer = Dense(embedding_size, activation='relu')(input_layer)
+
+        # The decoder layer is the layer that is used to decode the data and is the third layer of the neural network
+        decoder_layer = Dense(features.shape[1], activation='sigmoid')(encoder_layer)
+
+        # The autoencoder is the neural network that is used to encode and decode the data
+        autoencoder = Model(input_layer, decoder_layer)
+        
+        # Compile the autoencoder
+        autoencoder.compile(optimizer='adam', loss='mean_squared_error')
+        autoencoder.fit(features, features, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+        
+        # Save the encoder part of the model
+        encoder = Model(input_layer, encoder_layer)
+        model_path = 'Anime_RS/models/model_three'
+        encoder.save(model_path)
+        logging.info(f"Saved model to {model_path}")
+        
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+
+# Function to train the fourth neural network mode
+def model_four(anime_list_data, embedding_size, epochs, batch_size):
+    try:
+        # Preprocessing steps remain the same
+        mlb = MultiLabelBinarizer()
+        encoded_genres = mlb.fit_transform(anime_list_data['genres'])
+        joblib.dump(mlb, 'Anime_RS/models/mlb_model_four.pkl')  # Save MultiLabelBinarizer
+        
+        # MinMaxScaler for scores
+        scaler_score = MinMaxScaler()
+        scores_normalized = scaler_score.fit_transform(anime_list_data[['score']])
+        joblib.dump(scaler_score, 'Anime_RS/models/scaler_score_model_four.pkl')  # Save MinMaxScaler for scores
+        
+        # MinMaxScaler for release years
+        scaler_year = MinMaxScaler()
+        release_year_normalized = scaler_year.fit_transform(anime_list_data[['release_year']].fillna(0))
+        joblib.dump(scaler_year, 'Anime_RS/models/scaler_year_model_four.pkl')  # Save MinMaxScaler for release year
+        
+        features = np.concatenate([encoded_genres, scores_normalized, release_year_normalized], axis=1)
+
+        # Neural network building and training steps
+        input_layer = Input(shape=(features.shape[1],))
+
+        # Encoder layer is the layer that is used to encode the data and is the second layer of the neural network
+        encoder_layer = Dense(embedding_size, activation='relu')(input_layer)
+
+        # The decoder layer is the layer that is used to decode the data and is the third layer of the neural network
+        decoder_layer = Dense(features.shape[1], activation='sigmoid')(encoder_layer)
+
+        # The autoencoder is the neural network that is used to encode and decode the data
+        autoencoder = Model(input_layer, decoder_layer)
+
+        # Compile the autoencoder
+        autoencoder.compile(optimizer='adam', loss='mean_squared_error')
+        autoencoder.fit(features, features, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+
+        # Save the encoder part of the model
+        encoder = Model(input_layer, encoder_layer)
+        model_path = 'Anime_RS/models/model_four'
+        encoder.save(model_path)
+        logging.info(f"Saved model to {model_path}")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
 
 
 # Training and saving the models
@@ -151,7 +234,14 @@ if __name__ == '__main__':
         # logging.info("Data preprocessed") # Log that the data has been preprocessed
 
 
-        # Set the hyperparameters
+        # Hyperparameters choice:
+        # Epochs were the main one that I had to choose. I chose 35 because it was the least number of epochs 
+        # necessary to facilitate varied recommendations from the models. 
+        # The batch size was chosen to be 128 because it was the largest batch size that could be used without
+        # running into memory issues. For some reason, when I went higher I had some issues and I didn't want to
+        # spend too much time on it.
+        # The embedding size was chosen to be 50 because similar to the Epochs, it gave me the best outcome 
+        # in terms of varied recommendations from the models.
         embedding_size = 50 
         epochs = 35
         batch_size = 128
@@ -169,6 +259,12 @@ if __name__ == '__main__':
         logging.info("Training model 2")
         model2_output = model_two(data, embedding_size, epochs, batch_size)
 
-        
+        logging.info("Training model 3")
+        model3_output = model_three(data, embedding_size, epochs, batch_size)
+
+        logging.info("Training model 4")
+        model4_output = model_four(data, embedding_size, epochs, batch_size)
+
+
     except Exception as e:
         logging.exception("An exception occurred: {}".format(e))
