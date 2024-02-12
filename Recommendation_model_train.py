@@ -75,6 +75,66 @@ def model_one(anime_list_data, embedding_size, epochs, batch_size):
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
+# Function to extract the release year from the 'aired' column
+def extract_year(aired_string):
+        match = re.search(r'\d{4}', aired_string)
+        return int(match.group()) if match else None
+
+# Function to train the second neural network model
+def model_two(anime_list_data, embedding_size, epochs, batch_size):
+    try:
+        # Extract the release year from the 'aired' column
+        anime_list_data['release_year'] = anime_list_data['aired'].apply(extract_year)
+        
+        # Drop rows with missing 'release_year'
+        anime_list_data = anime_list_data.dropna(subset=['release_year'])
+
+        # One-hot encode the genres
+        mlb = MultiLabelBinarizer()
+        genres_encoded = mlb.fit_transform(anime_list_data['genres'])
+        # Save MultiLabelBinarizer object
+        joblib.dump(mlb, 'Anime_RS/models/mlb_model_two.pkl')
+        
+        # Normalize the scores
+        scaler_score = MinMaxScaler()
+        scores_normalized = scaler_score.fit_transform(anime_list_data[['score']])
+        # Save MinMaxScaler for scores
+        joblib.dump(scaler_score, 'Anime_RS/models/scaler_score_model_two.pkl')
+        
+        # Normalize the release year
+        scaler_year = MinMaxScaler()
+        release_year_normalized = scaler_year.fit_transform(anime_list_data[['release_year']])
+        # Save MinMaxScaler for release year
+        joblib.dump(scaler_year, 'Anime_RS/models/scaler_year_model_two.pkl')
+        
+        # Concatenate the encoded genres, normalized scores, and normalized release year to create the features array
+        features = np.concatenate([genres_encoded, scores_normalized, release_year_normalized], axis=1)
+
+        # Neural network building and training steps
+        input_layer = Input(shape=(features.shape[1],))
+
+        # Encoder layer is the layer that is used to encode the data and is the second layer of the neural network
+        encoder_layer = Dense(embedding_size, activation='relu')(input_layer)
+
+        # The decoder layer is the layer that is used to decode the data and is the third layer of the neural network
+        decoder_layer = Dense(features.shape[1], activation='sigmoid')(encoder_layer)
+
+        # The autoencoder is the neural network that is used to encode and decode the data
+        autoencoder = Model(input_layer, decoder_layer)
+
+        # Compile the autoencoder
+        autoencoder.compile(optimizer='adam', loss='mean_squared_error')
+        autoencoder.fit(features, features, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+        
+        # Save the encoder part of the model
+        encoder = Model(input_layer, encoder_layer)
+        model_path = 'Anime_RS/models/model_two'
+        encoder.save(model_path)
+        logging.info(f"Saved model to {model_path}")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+
+
 
 
 # Training and saving the models
@@ -102,12 +162,13 @@ if __name__ == '__main__':
         os.makedirs('Anime_RS/models', exist_ok=True)
 
         
-        # Train the model
+        # Train each of the models
         logging.info("Training model 1")
         model1_output = model_one(data, embedding_size, epochs, batch_size)
 
+        logging.info("Training model 2")
+        model2_output = model_two(data, embedding_size, epochs, batch_size)
+
         
-
-
     except Exception as e:
         logging.exception("An exception occurred: {}".format(e))
