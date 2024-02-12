@@ -1,1 +1,39 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Recommendation System</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Anime Recommendation System</h1>
+        <form id="recommendation-form">
+            <div class="form-group">
+                <label for="anime-title">Anime Title:</label>
+                <input type="text" id="anime-title" name="anime-title" required>
+            </div>
+            <div class="form-group">
+                <label for="num-recs">Number of Recommendations:</label>
+                <select id="num-recs" name="num-recs"> <!-- Number of recommendations to be displayed -->
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="7">7</option>
+                </select>
+            </div>
+            <button type="submit">Get Recommendations</button>
+        </form>
+        <div id="loader" style="display:none;">Loading...</div> <!-- TODO: ADD A LOADER OR SPINNER-->
+        <!-- Separate containers for each model's recommendations -->
+        <div id="recommendations-model1" class="recommendations-container"></div>
+        <div id="recommendations-model2" class="recommendations-container"></div>
+        <div id="recommendations-model3" class="recommendations-container"></div>
+        <div id="recommendations-model4" class="recommendations-container"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
 
