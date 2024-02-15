@@ -7,6 +7,7 @@ from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from flask import Flask, request, jsonify, render_template, abort
+import os
 
 app = Flask(__name__) # Create a Flask web server
 
@@ -35,20 +36,21 @@ def preprocess_data(anime_list_data):
     anime_list_data['genres'] = anime_list_data['genres'].apply(genre_split)
     return anime_list_data
 
+print(os.getcwd())
 # Load the preprocessing objects from disk
-mlb_model_one = joblib.load('Anime_RS/models/mlb_model_one.pkl')
-scaler_model_one = joblib.load('Anime_RS/models/scaler_model_one.pkl')
+mlb_model_one = joblib.load('models/mlb_model_one.pkl')
+scaler_model_one = joblib.load('models/scaler_model_one.pkl')
 
-mlb_model_two = joblib.load('Anime_RS/models/mlb_model_two.pkl')
-scaler_score_model_two = joblib.load('Anime_RS/models/scaler_score_model_two.pkl')
-scaler_year_model_two = joblib.load('Anime_RS/models/scaler_year_model_two.pkl')
+mlb_model_two = joblib.load('models/mlb_model_two.pkl')
+scaler_score_model_two = joblib.load('models/scaler_score_model_two.pkl')
+scaler_year_model_two = joblib.load('models/scaler_year_model_two.pkl')
 
-mlb_model_three = joblib.load('Anime_RS/models/mlb_model_three.pkl')
-scaler_model_three = joblib.load('Anime_RS/models/scaler_model_three.pkl')
+mlb_model_three = joblib.load('models/mlb_model_three.pkl')
+scaler_model_three = joblib.load('models/scaler_model_three.pkl')
 
-mlb_model_four = joblib.load('Anime_RS/models/mlb_model_four.pkl')
-scaler_score_model_four = joblib.load('Anime_RS/models/scaler_score_model_four.pkl')
-scaler_year_model_four = joblib.load('Anime_RS/models/scaler_year_model_four.pkl')
+mlb_model_four = joblib.load('models/mlb_model_four.pkl')
+scaler_score_model_four = joblib.load('models/scaler_score_model_four.pkl')
+scaler_year_model_four = joblib.load('models/scaler_year_model_four.pkl')
 
 # Function to extract the release year from the 'aired' column
 def extract_year(aired_string):
@@ -189,10 +191,10 @@ def get_recommendations_with_narrative_explanation_and_time(title, anime_list_da
 
 
 # Load the trained models from disk
-model_one = tf.keras.models.load_model('Anime_RS/models/model_one')
-model_two = tf.keras.models.load_model('Anime_RS/models/model_two')
-model_three = tf.keras.models.load_model('Anime_RS/models/model_three')
-model_four = tf.keras.models.load_model('Anime_RS/models/model_four')
+model_one = tf.keras.models.load_model('models/model_one')
+model_two = tf.keras.models.load_model('models/model_two')
+model_three = tf.keras.models.load_model('models/model_three')
+model_four = tf.keras.models.load_model('models/model_four')
 
 
 # Function to make predictions with each model
@@ -216,7 +218,7 @@ def make_predictions(title, n, data):
 def anime_titles():
     global data # Use the global variable
     if data is None: # If data is not loaded
-        filepath = 'Anime_RS/rec_anime_list.csv' # Path to the data
+        filepath = 'rec_anime_list.csv' # Path to the data
         data = load_data(filepath) # Load the data
         data = preprocess_data(data) # Preprocess the data
     titles = data['title'].unique().tolist() # Get the unique anime titles
@@ -241,7 +243,7 @@ def get_recommendations():
 
         global data
         if data is None:  # If data is not loaded
-            filepath = 'Anime_RS/rec_anime_list.csv'  # Path to the data
+            filepath = 'rec_anime_list.csv'  # Path to the data
             data = load_data(filepath)  # Load the data
             data = preprocess_data(data)  # Preprocess the data
 
@@ -259,4 +261,5 @@ def get_recommendations():
 
 
 if __name__ == '__main__':
+    
     app.run(debug=True)  # This starts the Flask web server
