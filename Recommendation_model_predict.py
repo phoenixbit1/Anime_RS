@@ -1,10 +1,8 @@
-import json
 import joblib
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 import re
-import os
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
