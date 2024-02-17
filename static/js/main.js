@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() { // When the document is ready
     const form = document.getElementById('recommendation-form'); // Get the recommendation form
-    const recommendationsContainer = document.getElementById('recommendations-container'); // Get the recommendations container
     const loader = document.getElementById('loader'); // Get the loader element
 
     // Fetch anime titles for autocomplete when the document is ready
@@ -33,8 +32,7 @@ document.addEventListener('DOMContentLoaded', function() { // When the document 
             }
             return response.json(); // Parse the response body as JSON
         }) 
-        .then(data => {
-            recommendationsContainer.innerHTML = ''; // Clear the recommendations container
+        .then(data => { // Process the parsed data
             // Hide loader
             loader.style.display = 'none';
 
