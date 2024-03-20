@@ -8,7 +8,8 @@ from sklearn.preprocessing import MultiLabelBinarizer, MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from flask import Flask, request, jsonify, render_template, abort
 import os
-
+import time
+current_time = time.time()  # Get the current time
 app = Flask(__name__) # Create a Flask web server
 
 # Global variable to hold the preprocessed data
@@ -251,7 +252,9 @@ def get_recommendations():
         
         # Debug: print the predictions being sent back to the client
         print("Predictions:", predictions)
-
+        current_time2 = time.time()  # Get the current time
+        difference_time = current_time2 - current_time  # Get the time taken to make the predictions
+        print("Time taken:", difference_time)  # Print the time taken to make the predictions
         return jsonify(predictions)  # Return the predictions as JSON
     except Exception as e:
         print(e)  # Print the error to the console
