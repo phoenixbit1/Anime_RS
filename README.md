@@ -9,8 +9,6 @@ This repository contains a neural network-based anime recommendation system that
 
 Our hypothesis posits that the fourth model will yield the most satisfactory recommendations.
 
-## Getting Started
-
 ### Dependencies
 Ensure you have the following prerequisites installed on your machine:
 - tensorflow 2.13.0
