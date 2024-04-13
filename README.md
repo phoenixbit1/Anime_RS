@@ -26,3 +26,27 @@ These can be installed via `requirements.txt` using the following command in you
 
 ```bash
 pip install -r requirements.txt
+```
+
+## Running the Code
+
+To train the models, execute the training script by running the following command:
+
+```bash
+python Recommendation_model_train.py
+```
+
+This script will conduct the training process for all four models and save the trained models to the disk.
+
+After the models have been trained, you can initiate the web application for making predictions with:
+
+```bash
+python Recommendation_model_predict.py
+```
+
+Launching this script will start the Flask web server. You can then navigate to the local URL provided by the Flask output to interact with the web application. 
+
+
+
+
+
